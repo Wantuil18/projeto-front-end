@@ -1,123 +1,128 @@
-const nomeField = document.querySelector('#nome');
-const data_nascimentoField = document.querySelector('#data_nascimento');
-const generoField = document.querySelector('#genero');
-const Nome_maeField = document.querySelector('#Nome_mae');
-const cpfField = document.querySelector('#cpf');
-const emailField = document.querySelector('#email');
-const telefone_fixoField = document.querySelector('#telefone_fixo');
-const telefone_celularField = document.querySelector('#telefone_celular');
-const cepField = document.querySelector('#cep');
-const enderecoField = document.querySelector('#endereco');
-const estadoField = document.querySelector('#estado');
-const complementoField = document.querySelector('#complemento');
-const usiarioField = document.querySelector('#usuario');
-const senhaField = document.querySelector('#senha');
-const confirmar_senhaField = document.querySelector('#confirmar_senha');
+const validarFormulario = () => {
+    const campos = document.querySelectorAll("input[required]");
+    let formularioValido = true;
 
-
-form.addEventListener('submit', (event) => {
-
-    let errors = []});
-
-    
-    if (nameField.value.trim() === '' || nameField.value.trim().length < 15 || nameField.value.trim().length > 80 ) {
-        errors.push('O nome deve ter entre 15 e 80 caracteres.');
-        
-    }
-
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailField.value.trim())) {
-        errors.push('Por favor, insira um e-mail válido.');
-    }
-
-    
-    if (senhaFieldField.value.trim().length < 8) {
-        errors.push('A senha deve ter pelo menos 8 caracteres.');
-    }
-    
-    if (senhaField.value.trim() !== confirmar_senhaField.value.trim()) {
-        errors.push('As senhas não coincidem.');
-    }
-    
-    const cpfRegex = /^\d{11}$/;
-    if (!cpfRegex.test(cpfField.value.trim())) {
-        errors.push('O CPF deve ter 11 dígitos.');
-    }
-    
-    const phoneRegex = /^\d{10,11}$/;
-    if (!phoneRegex.test(telefone_fixoField.value.trim())) {
-        errors.push('O telefone fixo deve ter 10 ou 11 dígitos.');
-    }
-    if (!phoneRegex.test(telefone_celularField.value.trim())) {
-        errors.push('O telefone celular deve ter 10 ou 11 dígitos.');
-    }
-    
-    const dateOfBirth = new Date(data_nascimentoField.value);
-    const today = new Date();
-    if (isNaN(dateOfBirth.getTime()) || dateOfBirth >= today) {
-        errors.push('A data de nascimento deve ser uma data válida e anterior a hoje.');
-    }
-    if (generoField.value === '') {
-        errors.push('O gênero é obrigatório.');
-
-    }
-    const cepRegex = /^\d{8}$/;
-    if (!cepRegex.test(cepField.value.trim())) {
-        errors.push('O CEP deve ter 8 dígitos.');
-        MessageEvent = 'O CEP deve ter 8 dígitos.';
-    }
-
-    
-    if (enderecoField.value.trim() === '') {
-        errors.push('O endereço é obrigatório.');
-    }
-    
-    if (estadoField.value.trim() === '') {
-        errors.push('O estado é obrigatório.');
-    }
-    
-    if (complementoField.value.trim() === '') {
-        errors.push('O complemento é obrigatório.');
-    } 
-    
-    if (usiarioField.value.trim() === '') {
-        errors.push('O usuário é obrigatório.');
-        const usuárioRegex = /^[a-zA-Z]{6}$/;
-        if (!usuárioRegex.test(usiarioField.value.trim())) {
-            errors.push('O usuário deve ter 6 letras.');
+    campos.forEach((campo) => {
+        if (!campo.value.trim()) {
+            formularioValido = false;
+            campo.style.borderColor = "red";
+        } else {
+            campo.style.borderColor = "";
         }
+    });
+
+    if (!formularioValido) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
     }
-    
-    if (senhaField.value.trim() === '') {
-        errors.push('A senha é obrigatória.');
-        const senhaRegex = /^[a-zA-Z 0-9]{8}$/;
-        if (!senhaRegex.test(senhaField.value.trim())) {
-            errors.push('A senha deve ter 8 letras e números.');
-        }
-    }
-    
-    if (confirmar_senhaField.value.trim() === '') {
-        errors.push('A confirmação da senha é obrigatória.');
-        const confirmar_senhaRegex = /^[a-zA-Z 0-9]{8}$/;
-        if (!confirmar_senhaRegex.test(confirmar_senhaField.value.trim())) {
-            errors.push('A confirmação da senha deve ter 8 letras e números.');
-        }
-    }
-    
-    if (senhaField.value.trim() !== confirmar_senhaField.value.trim()) {
-        errors.push('As senhas não coincidem.');
-    }
-    
-    if (errors.length > 0) {
+
+    return formularioValido;
+};
+
+document.getElementById("formulario").addEventListener("submit", (event) => {
+    if (!validarFormulario()) {
         event.preventDefault();
-        alert(errors.join('\n'));
-        
+    }
+});
 
-    } else {
-        alert('Formulário enviado com sucesso!');
-        mensageEvent = 'Formulário enviado com sucesso!';
-        form.submit();
+const eNumero = (numero) => /^\[0-9]+$/.test(numero);
+const ecepValido = (cep) => cep.length == 8 && eNumero(cep);
+const limparFormulario = () => {
+    document.getElementById("endereço").value = "";
+    document.getElementById("estado").value = "";
+}
+const preencherFormulario = (endereço) => {
+    document.getElementById("endereço").value = "endereço.logradouro";
+    document.getElementById("estado").value = "endereço.uf";
+}
+const pesquisarCep = async () => {
+    limparFormulario();
+
+    const cep = document.getElementById("cep").value.replace("-", "");
+    const url = `https://viacep.com.br/ws/${cep}/json/`;
+    if (ecepValido(cep)) {
+        const dados = await fetch(url)
+        await dados.json()
+    if (endereço.hasOwnProperty("erro")) {
+            document.getElementById("endereço").value = "CEP não encontrado.";
+        }
+        else {
+            preencherFormulario(endereço);
+        }
+    }
+    else {
+        document.getElementById("endereço").value = "CEP inválido.";
+    }
+}
+
+document.getElementById("cep").addEventListener("focusout", pesquisarCep);
+
+document.getElementById("formulario").addEventListener("submit", (event) => {
+    const senha = document.getElementById("senha").value;
+    const confirmarSenha = document.getElementById("confirmarSenha").value;
+
+    if (senha !== confirmarSenha) {
+        event.preventDefault();
+        alert("As senhas não coincidem. Por favor, verifique.");
+    }
+});
+
+const validarCPF = (cpf) => {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+    const calcularDigito = (base) => {
+        let soma = 0;
+        for (let i = 0; i < base.length; i++) {
+            soma += parseInt(base.charAt(i)) * (base.length + 1 - i);
+        }
+        const resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
+    };
+
+    const base = cpf.substring(0, 9);
+    const digito1 = calcularDigito(base);
+    const digito2 = calcularDigito(base + digito1);
+
+    return cpf === base + digito1 + digito2;
+};
+
+document.getElementById("formulario").addEventListener("submit", (event) => {
+    const cpf = document.getElementById("cpf").value;
+
+    if (!validarCPF(cpf)) {
+        event.preventDefault();
+        alert("CPF inválido. Por favor, verifique.");
+    }
+});
+document.getElementById("formulario").addEventListener("submit", (event) => {
+    const nome = document.getElementById("nome").value.trim();
+    const telefoneCelular = document.getElementById("telefoneCelular").value.trim();
+    const telefoneFixo = document.getElementById("telefoneFixo").value.trim();
+    const login = document.getElementById("login").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+
+    const nomeValido = /^[a-zA-Z\s]{15,80}$/.test(nome);
+    const telefoneValido = /^\(\+55\)\d{2}-\d{8}$/.test(telefoneCelular) && /^\(\+55\)\d{2}-\d{8}$/.test(telefoneFixo);
+    const loginValido = /^[a-zA-Z]{6}$/.test(login);
+    const senhaValida = /^[a-zA-Z]{8}$/.test(senha);
+
+    if (!nomeValido) {
+        event.preventDefault();
+        alert("O campo Nome deve ter entre 15 e 80 caracteres alfabéticos.");
     }
 
-    
+    if (!telefoneValido) {
+        event.preventDefault();
+        alert("Os campos Telefone Celular e Telefone Fixo devem estar no formato (+55)XX-XXXXXXXX.");
+    }
+
+    if (!loginValido) {
+        event.preventDefault();
+        alert("O campo Login deve ter exatamente 6 caracteres alfabéticos.");
+    }
+
+    if (!senhaValida) {
+        event.preventDefault();
+        alert("O campo Senha deve ter exatamente 8 caracteres alfabéticos.");
+    }
+});
